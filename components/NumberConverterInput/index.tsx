@@ -1,8 +1,9 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import getValidInput from "./getValidInput";
-import convertBase from "./convertBase";
 import React from "react";
+import { toast } from "sonner";
+import convertBase from "./convertBase";
+import getValidInput from "./getValidInput";
 
 const BASE_TEN_PLACEHOLDER = "123";
 
@@ -21,9 +22,21 @@ export const NumberConverterInput = ({
 }: NumberConverterInputProps) => {
   const handleFieldUpdate = (e: React.ChangeEvent<HTMLInputElement>) => {
     const input = e.target.value;
-    console.log("Input event:", input);
-    const validInput = getValidInput(base, input);
-    console.log("Valid input:", validInput);
+    const { validInput, hasInvalidChars, validChars } = getValidInput(
+      base,
+      input
+    );
+
+    if (hasInvalidChars) {
+      toast.warning("Invalid characters detected", {
+        description: `Valid characters for base ${base}: ${validChars}`,
+        id: `invalid-input-base-${base}`,
+        classNames: {
+          title: "font-bold text-lg",
+        },
+      });
+    }
+
     setBaseTenValue(convertBase(validInput, base, 10));
   };
 

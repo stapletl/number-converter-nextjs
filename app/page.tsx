@@ -21,9 +21,7 @@ const Home: React.FC = () => {
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>Number Converter</CardTitle>
-          <CardDescription>
-            Convert between different bases in real time
-          </CardDescription>
+          <CardDescription>Real-time base conversion</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
           <NumberConverterInput
