@@ -1,6 +1,7 @@
 "use client";
 
 import { BaseSettingsPopover } from "@/components/BaseSettingsPopover";
+import { DataTypeRangeStatus } from "@/components/DataTypeRangeStatus";
 import { NumberConverterInput } from "@/components/NumberConverterInput";
 import {
   Card,
@@ -73,10 +74,13 @@ const Home: React.FC = () => {
           <CardTitle>Number Converter</CardTitle>
           <CardDescription>Real-time base conversion</CardDescription>
           <CardAction>
-            <BaseSettingsPopover
-              selectedBases={selectedBases}
-              onSelectionChange={handleBaseSelectionChange}
-            />
+            <div className="flex gap-2">
+              <DataTypeRangeStatus baseTenValue={num} />
+              <BaseSettingsPopover
+                selectedBases={selectedBases}
+                onSelectionChange={handleBaseSelectionChange}
+              />
+            </div>
           </CardAction>
         </CardHeader>
         <CardContent

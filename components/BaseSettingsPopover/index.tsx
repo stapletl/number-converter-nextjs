@@ -41,16 +41,17 @@ export function BaseSettingsPopover({
           <div className="space-y-3">
             {AVAILABLE_BASES.map((base) => {
               const isSelected = selectedBases.includes(base.id);
-              const isLastSelected =
-                selectedBases.length === 1 && isSelected;
+              const lastTwoSelected = selectedBases.length <= 2 && isSelected;
 
               return (
                 <div key={base.id} className="flex items-center space-x-2">
                   <Checkbox
                     id={base.id}
                     checked={isSelected}
-                    onCheckedChange={(checked) => handleToggle(base.id, checked)}
-                    disabled={isLastSelected}
+                    onCheckedChange={(checked) =>
+                      handleToggle(base.id, checked)
+                    }
+                    disabled={lastTwoSelected}
                   />
                   <Label
                     htmlFor={base.id}
