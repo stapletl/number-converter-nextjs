@@ -57,7 +57,7 @@ bun start
 
 The converter uses a custom base conversion algorithm that:
 
-1. Accepts input in any supported base (2, 8, 10, 16)
+1. Accepts input in any supported base (2, 8, 10, 16, 32, 64, custom)
 2. Converts the input to decimal (base 10) as an intermediate step
 3. Converts from decimal to the target base for display
 4. Validates input to ensure only valid digits for each base are accepted
