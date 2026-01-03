@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { useIsMobile } from "@/hooks/use-mobile";
 import convertBase from "./convertBase";
 import getValidInput from "./getValidInput";
+import { AnimatedCopyButton } from "../animated-copy-button";
 
 const BASE_TEN_PLACEHOLDER = "123";
 const ERROR_MESSAGE_DURATION_MS = 4000;
@@ -86,17 +87,19 @@ export const NumberConverterInput = ({
 
   return (
     <div className="grow flex flex-col gap-1.5">
-      <div className="flex items-start justify-between gap-2">
-        <Label htmlFor={`base-${label}-input`}>{label}</Label>
+      <Label htmlFor={`base-${label}-input`}>{label}</Label>
+      <div className="flex gap-2">
+        <Input
+          type="text"
+          id={`base-${label}-input`}
+          inputMode={base <= 10 ? "numeric" : "text"}
+          placeholder={convertBase(BASE_TEN_PLACEHOLDER, 10, base)}
+          value={convertBase(baseTenValue, 10, base)}
+          onChange={(e) => handleFieldUpdate(e)}
+        />
+        <AnimatedCopyButton value={convertBase(baseTenValue, 10, base)} />
       </div>
-      <Input
-        type="text"
-        id={`base-${label}-input`}
-        inputMode={base <= 10 ? "numeric" : "text"}
-        placeholder={convertBase(BASE_TEN_PLACEHOLDER, 10, base)}
-        value={convertBase(baseTenValue, 10, base)}
-        onChange={(e) => handleFieldUpdate(e)}
-      />
+
       {isMobile && error && (
         <span
           className={`text-xs text-destructive break-all ${

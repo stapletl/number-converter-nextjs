@@ -23,10 +23,24 @@ const Home: React.FC = () => {
   const [num, setNum] = useState<string>("");
   const [displayedBases, setDisplayedBases] = useState<BaseId[]>([]);
   const [availableBases, setAvailableBases] = useState<Set<BaseId>>(new Set());
+  const [localCustomBase, setLocalCustomBase] = useState<string>(
+    preferences.customBase.toString()
+  );
+  const [customBaseError, setCustomBaseError] = useState("");
   const prevBasesRef = useRef<BaseId[]>([]);
+  const customBaseErrorTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const selectedBases = preferences.selectedBases;
   const customBase = preferences.customBase;
+
+  // Cleanup timeouts on unmount
+  useEffect(() => {
+    return () => {
+      if (customBaseErrorTimeoutRef.current) {
+        clearTimeout(customBaseErrorTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // Handle smooth additions and removals
   useEffect(() => {
@@ -65,6 +79,62 @@ const Home: React.FC = () => {
       updatePreferences({ customBase: value });
     },
     [updatePreferences]
+  );
+
+  const isValidCustomBase = (base: string) =>
+    !isNaN(Number(base)) && Number(base) >= 2 && Number(base) <= 64;
+
+  const customBaseInput = (
+    <div className="w-min flex flex-col gap-1.5">
+      <Label className="text-nowrap" htmlFor="custom-base-input">
+        Custom
+      </Label>
+      <Input
+        type="text"
+        inputMode="numeric"
+        id="custom-base-input"
+        value={localCustomBase}
+        onChange={(e) => {
+          const value = e.target.value;
+          setLocalCustomBase(value);
+
+          const isValid = isValidCustomBase(value);
+
+          if (!isValid) {
+            // Clear any existing timeout
+            if (customBaseErrorTimeoutRef.current) {
+              clearTimeout(customBaseErrorTimeoutRef.current);
+            }
+
+            // Set error message
+            setCustomBaseError("2-64");
+
+            // Clear error after 4 seconds
+            customBaseErrorTimeoutRef.current = setTimeout(() => {
+              setCustomBaseError("");
+            }, 4000);
+          } else {
+            // Clear error if input becomes valid
+            if (customBaseErrorTimeoutRef.current) {
+              clearTimeout(customBaseErrorTimeoutRef.current);
+            }
+            setCustomBaseError("");
+          }
+
+          if (isValid) {
+            handleCustomBaseChange(Number(value));
+          } else {
+            handleCustomBaseChange(5);
+          }
+        }}
+        aria-invalid={!isValidCustomBase(localCustomBase)}
+      />
+      {customBaseError && (
+        <span className="text-xs text-destructive break-all animate-in fade-in slide-in-from-top-1 duration-200">
+          {customBaseError}
+        </span>
+      )}
+    </div>
   );
 
   return (
@@ -106,34 +176,15 @@ const Home: React.FC = () => {
               return (
                 <div
                   key="custom"
-                  className={`${containerClass} flex items-start gap-4`}
+                  className={`${containerClass} flex items-start gap-2`}
                 >
+                  {customBaseInput}
                   <NumberConverterInput
-                    label="Custom"
+                    label="Base"
                     base={customBase}
                     baseTenValue={num}
                     setBaseTenValue={setNum}
                   />
-                  <div className="w-min flex flex-col gap-1.5">
-                    <Label className="text-nowrap" htmlFor="custom-base-input">
-                      Custom Base
-                    </Label>
-                    <Input
-                      type="number"
-                      inputMode="numeric"
-                      id="custom-base-input"
-                      value={customBase}
-                      min={2}
-                      max={64}
-                      onChange={(e) => {
-                        const value = Math.min(
-                          64,
-                          Math.max(2, Number(e.target.value))
-                        );
-                        handleCustomBaseChange(value);
-                      }}
-                    />
-                  </div>
                 </div>
               );
             }
